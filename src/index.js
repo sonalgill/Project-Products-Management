@@ -3,6 +3,7 @@ const route = require("./route/route.js");
 const app = express();
 const mongoose = require("mongoose");
 const multer = require('multer')
+const { AppConfig } = require('aws-sdk')
 
 app.use(express.json());
 app.use(multer().any());
