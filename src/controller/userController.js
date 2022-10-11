@@ -260,7 +260,7 @@ const updateUser = async function (req, res) {
 
             let dupEmail = await userModel.find({ email })
 
-            if (dupEmail) return res.status(404).send({ status: true, message: "Email is already in use" })
+            if (dupEmail) return res.status(400).send({ status: true, message: "Email is already in use" })
         }
 
         if (phone) {
@@ -270,7 +270,7 @@ const updateUser = async function (req, res) {
 
             let dupPhone = await userModel.find({ phone })
 
-            if (dupPhone) return res.status(404).send({ status: true, message: "phone no. is already in use" })
+            if (dupPhone) return res.status(400).send({ status: true, message: "phone no. is already in use" })
         }
 
         if (password) {
@@ -316,10 +316,14 @@ const updateUser = async function (req, res) {
                 }
 
                 if (billing.pincode) {
-                    if (!billing.pincode || isNaN(billing.pincode)) return res.status(400).send({ status: false, message: "please enter your billing pincode" })
+                    // if (!billing.pincode || isNaN(billing.pincode)) return res.status(400).send({ status: false, message: "please enter your billing pincode" })
                     if (!pincodeRegex(billing.pincode)) return res.status(400).send({ status: false, message: "please enter a valid pincode" })
                 }
             }
+
+            let updateUser = await userModel.findOneAndUpdate({_id:userId},{$set:{fname,lname,email,phone,password,address,profileImage}},{new:true})
+            
+            return res.status(200).send({status:true,message:"successfully updated",data:updateUser})
         }
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
