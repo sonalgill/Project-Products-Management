@@ -12,7 +12,7 @@ const { isValidObjectId, objectValue, emailRegex, phoneRegex, passwordRegex, pin
 //create user
 const createUser = async (req, res) => {
     try {
-        let { password, fname, lname, email, phone } = req.body
+        let { password, fname, lname, email, phone, profileImage } = req.body
         let s = req.body.address.shipping
         let b = req.body.address.billing
 
@@ -140,15 +140,26 @@ const createUser = async (req, res) => {
             }
         }
 
-        let profileImage = req.profileImage
+        let pImage = req.files
+        if(!pImage.length){
+            return res.status(400).send({
+                status: false,
+                msg: "Profile Image is mandatory and can contain a file Only!"
+            })
+        }
+        if(pImage[0].fieldname != 'profileImage'){
+            return res.status(400).send({
+                status: false,
+                msg: "Profile Image is mandatory!"
+            })
+        }
+        if (pImage) {
+            let profilePicUrl = await uploadFile(pImage[0])
+            req.body.profileImage = profilePicUrl
+        }
 
         let saltRound = 10
         req.body.password = await bcrypt.hash(password, saltRound)
-
-        if (profileImage) {
-            let profilePicUrl = await uploadFile(profileImage[0])
-            req.body.profileImage = profilePicUrl
-        }
 
         let user = await userModel.create(req.body)
 
