@@ -35,4 +35,4 @@ const pincodeRegex = (value) => {
 }
 
 
-module.exports={isValidObjectId,objectValue,emailRegex,phoneRegex,passwordRegex,pincodeRegex}
+ module.exports={isValidObjectId,objectValue,emailRegex,phoneRegex,passwordRegex,pincodeRegex}
