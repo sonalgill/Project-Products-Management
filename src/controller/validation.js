@@ -34,5 +34,9 @@ const pincodeRegex = (value) => {
     return true;
 }
 
+const name = (value) => {
+  return /^[a-zA-Z]+$/.test(value)
+}
 
- module.exports={isValidObjectId,objectValue,emailRegex,phoneRegex,passwordRegex,pincodeRegex}
+
+module.exports={isValidObjectId,objectValue,emailRegex,phoneRegex,passwordRegex,pincodeRegex, name}

@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-        fname: {
+        lname: {
             type: String,
             required: true
         },
@@ -27,9 +27,7 @@ const userSchema = new mongoose.Schema(
         },
         password: {
             type: String,
-            required: true,
-          //  minlength: 8,
-          //  maxlength: 15
+            required: true
         },
         address: {
             shipping: {
