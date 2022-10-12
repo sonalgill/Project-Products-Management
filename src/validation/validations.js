@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
-function isValidObjectId(objectId){
-    return mongoose.Types.objectId.isValid(objectId)
+function isValidObjectId(value){
+    return mongoose.Types.ObjectId.isValid(value)
 }
 
 const objectValue = (value) => {
@@ -23,9 +23,11 @@ const phoneRegex = (value) => {
     return true;
 }
 
-const passwordRegex = (value) => {
-  if (/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,15}$/.test(value))
-    return true;
+const isValidPassword = (value) => {
+    if(value.length > 15 || value.length < 8){
+        return false
+    }
+    return true
 }
 
 
@@ -38,5 +40,9 @@ const name = (value) => {
   return /^[a-zA-Z]+$/.test(value)
 }
 
+const validBody = (value) => {
+    return Object.keys(value).length
+}
 
-module.exports={isValidObjectId,objectValue,emailRegex,phoneRegex,passwordRegex,pincodeRegex, name}
+
+module.exports={isValidObjectId,objectValue,emailRegex,phoneRegex,isValidPassword,pincodeRegex, name, validBody}
