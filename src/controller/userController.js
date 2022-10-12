@@ -25,7 +25,6 @@ module.exports = {
                 let profilePicUrl = await uploadFile(pImage[0])
                 req.body.profileImage = profilePicUrl
             }
-
             let saltRound = 10
             req.body.password = await bcrypt.hash(password, saltRound)
 
