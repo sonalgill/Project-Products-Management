@@ -39,10 +39,10 @@ module.exports = {
             if (!v.phoneRegex(phone)) {
                 return res.status(400).send({ status: false, msg: "Not a valid Phone Number!" })
             }
-            if(!address){
+            if (!address) {
                 return res.status(400).send({ status: false, msg: "Address is mandatory!" })
             }
-            if(!address.shipping){
+            if (!address.shipping) {
                 return res.status(400).send({ status: false, msg: "Please provide Shipping Address!" })
             }
             let s = address.shipping
@@ -58,7 +58,7 @@ module.exports = {
             if (!v.pincodeRegex(s.pincode)) {
                 return res.status(400).send({ status: false, msg: "In Shipping Section, Pincode can be a 6 digits Number Only!" })
             }
-            if(!address.billing){
+            if (!address.billing) {
                 return res.status(400).send({ status: false, msg: "Please provide Billing Address!" })
             }
             let b = address.billing
@@ -106,7 +106,7 @@ module.exports = {
             let findUser = await userModel.findOne({ _id: userId })
             if (!findUser) return res.status(404).send({ status: false, message: "User not found!" })
 
-            let { fname, lname, email, phone, password, address } = req.body
+            let { fname, lname, email, phone, password, address, profileImage } = req.body
             if (fname && !v.name(fname)) {
                 return res.status(400).send({ status: false, message: "Please enter a valid fName!" })
             }
@@ -121,6 +121,13 @@ module.exports = {
             }
             if (password && !v.isValidPassword(password)) {
                 return res.status(400).send({ status: false, message: "Length of the Password can be 8 to 15 !" })
+            }
+            if (profileImage && !v.objectValue(profileImage)) {
+                return res.status(400).send({ status: false, message: "ProfileImage can contain a file Only!" })
+            }
+            if (Object.keys(req.body).includes('profileImage') &&
+                (!profileImage || (req.files.length == 0 || req.files[0].fieldname != 'profileImage'))) {
+                return res.status(400).send({ status: false, msg: "Please attach a file in ProfileImage!" })
             }
             if (address && address.shipping) {
                 let s = address[shipping]
