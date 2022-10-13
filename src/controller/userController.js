@@ -107,7 +107,6 @@ module.exports = {
                 req.body.profileImage = profilePicUrl
             }
             req.body = JSON.parse(JSON.stringify(req.body))
-            console.log({...req.body})
             let updateUser = await userModel.findOneAndUpdate({ _id: userId }, { $set: {...req.body} }, { new: true })
             res.status(200).send({ status: true, message: "User profile updated!", data: updateUser })
         } catch (err) {
