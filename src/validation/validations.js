@@ -5,7 +5,7 @@ module.exports = {
     return mongoose.Types.ObjectId.isValid(value)
   },
   objectValue: (value) => {
-    if (typeof value === "undefined" || value === null || typeof value === "boolean" || typeof value === "number") return false;
+    if (typeof value === "undefined" || value === null ) return false;
     if (typeof value === "string" && value.trim().length === 0) return false;
     if (typeof value === "object" && Object.keys(value).length === 0) return false;
     return true;

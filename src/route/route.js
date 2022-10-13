@@ -49,7 +49,32 @@ router.post(
   productController.createProduct
 )
 
+//get product by query
+router.get(
+  '/products',
+  validProduct.getProducts,
+  productController.getProducts
+)
 
+//get product by ID
+router.get(
+  '/products/:productId',
+  productController.getProductById
+)
+
+
+//update product
+router.put(
+  '/products/:productId',
+  validProduct.updateById,
+  productController.updateById
+)
+
+//delete product
+router.delete(
+  '/products/:productId',
+  productController.deleteProductId
+)
 
 
 //=========================== if endpoint is not correct==========================================
