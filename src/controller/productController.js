@@ -9,22 +9,42 @@ module.exports = {
 
     createProduct: async (req, res) => {
         try {
-            let { currencyId, currencyFormat, title } = req.body
-            let uniqueTitle = await productModel.findOne({ title: title })
+            let { currencyId, currencyFormat, title, description, style, availableSizes } = req.body
+            req.body.title = title.replace(/  +/g, ' ').trim()
+            title = req.body.title
+            let uniqueTitle = await productModel.findOne({ title: { $regex: title, $options: 'i' } })
             if (uniqueTitle)
                 return res.status(400).send({ status: false, msg: "Title has to be unique!" })
+            let pImage = req.files
+            if (!pImage.length)
+                return res.status(400).send({ status: false, msg: "Product Image is mandatory and can contain a file Only!" })
+            if (pImage[0].fieldname != 'productImage')
+                return res.status(400).send({ status: false, msg: "Product Image is mandatory!" })
             if (!currencyId) { req.body.currencyId = 'INR' }
             if (!currencyFormat) { req.body.currencyFormat = '₹' }
             if (req.files) {
                 let productImage = await uploadFile(req.files[0])
                 req.body.productImage = productImage
             }
+            availableSizes = availableSizes.replace(/  +/g, '').split(",")
+            req.body.availableSizes = availableSizes
+            let sizes = ["S", "XS", "M", "X", "L", "XXL", "XL"]
+      
+            for (let i = 0; i < availableSizes.length; i++) {
+                if (!sizes.includes(availableSizes[i])) {
+                    return res.status(400).send({ status: false, msg: `availableSizes can be among [S, XS, M, X, L, XXL, XL] only` })
+                }
+            }
+
+            req.body.description = description.replace(/  +/g, ' ')
+            if (style) { req.body.style = style.replace(/  +/g, ' ') }
             let product = await productModel.create(req.body)
             res.status(201).send({ status: true, message: "Product created Successfully!", data: product })
         } catch (e) {
             res.status(500).send({ status: false, msg: e.message })
         }
     },
+
     getProducts: async function (req, res) {
         try {
             let data = req.query
