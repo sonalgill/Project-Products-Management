@@ -25,7 +25,7 @@ module.exports = {
     getProducts: async function (req, res) {
         try {
             let data = req.query
-            let { size, name, priceGreaterThan, priceLessThan, priceSort } = data
+            let { size, title, priceGreaterThan, priceLessThan, priceSort } = data
 
             let filter = { isDeleted: false }
 
@@ -34,8 +34,8 @@ module.exports = {
                 filter.availableSizes = { $all: sizeArray }
             }
 
-            if (name) {
-                filter.title = name.trim()
+            if (title) {
+                filter.title = title.trim()
             }
 
             if (priceGreaterThan) {
