@@ -99,7 +99,7 @@ module.exports = {
     },
 
     updateUser: async (req, res, next) => {
-        try {
+      //  try {
             let userId = req.params.userId
             if (!v.isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Please enter a valid userId!" })
 
@@ -130,7 +130,7 @@ module.exports = {
                 return res.status(400).send({ status: false, msg: "Please attach a file in ProfileImage!" })
             }
             if (address && address.shipping) {
-                let s = address[shipping]
+                let s = address.shipping
                 if (s.street && s.street.trim().length == 0) {
                     return res.status(400).send({ status: false, msg: "Street can not be an Empty String in Shipping Section!" })
                 }
@@ -154,8 +154,8 @@ module.exports = {
                 }
             }
             next()
-        } catch (e) {
-            res.status(500).send({ status: false, msg: e.message })
-        }
+        // } catch (e) {
+        //     res.status(500).send({ status: false, msg: e.message })
+        // }
     }
 }

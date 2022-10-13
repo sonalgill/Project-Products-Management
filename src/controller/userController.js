@@ -61,7 +61,7 @@ module.exports = {
                 "group50",
                 { expiresIn: "1d" })
             return res.status(200).send({
-                status: true, message: "User login Successful", data: { userID: user._id, token: generatedToken }
+                status: true, message: "User login successfull!", data: { userID: user._id, token: generatedToken }
             })
         } catch (error) {
             return res.status(500).send({ status: false, message: error.message })
@@ -77,7 +77,7 @@ module.exports = {
             if (!findUser)
                 return res.status(404).send({ status: false, message: "User not found!" })
     
-            return res.status(200).send({ status: true, message: "User details", data: findUser })
+            return res.status(200).send({ status: true, message: "User profile details", data: findUser })
         } catch (err) {
             return res.status(500).send({ status: false, message: err.message })
         }
@@ -106,11 +106,14 @@ module.exports = {
                 let profilePicUrl = await uploadFile(req.files[0])
                 req.body.profileImage = profilePicUrl
             }
-            let updateUser = await userModel.findOneAndUpdate({ _id: userId }, { $set: req.body }, { new: true })
-            res.status(200).send({ status: true, msg: "Data Updated Successfully!", data: updateUser })
+            req.body = JSON.parse(JSON.stringify(req.body))
+            console.log({...req.body})
+            let updateUser = await userModel.findOneAndUpdate({ _id: userId }, { $set: {...req.body} }, { new: true })
+            res.status(200).send({ status: true, message: "User profile updated!", data: updateUser })
         } catch (err) {
             return res.status(500).send({ status: false, message: err.message })
         }
     
     }
 }
+

@@ -2,21 +2,24 @@ const express = require("express");
 const router = express.Router();
 
 const userController = require('../controller/userController')
-const validation = require('../validation/userValidation')
+const productController = require('../controller/productController')
+const validUser = require('../validation/userValidation')
+const validProduct = require('../validation/productValidation')
 const mid = require('../middleware/auth')
 
+//-------------user---------
 
 //  create user
 router.post(
   '/register',
-  validation.createUser,
+  validUser.createUser,
   userController.createUser
 )
 
 //login user
 router.post(
   '/login',
-  validation.loginUser,
+  validUser.loginUser,
   userController.login
 )
 
@@ -32,11 +35,19 @@ router.put(
   '/user/:userId/profile',
   mid.authentication,
   mid.authorisation,
-  validation.updateUser,
+  validUser.updateUser,
   userController.updateUser
 )
 
 
+//------------product-------------
+
+//create product
+router.post(
+  '/products',
+  validProduct.createProduct,
+  productController.createProduct
+)
 
 
 

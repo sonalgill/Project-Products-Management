@@ -31,5 +31,8 @@ module.exports = {
   },
   validBody: (value) => {
     return Object.keys(value).length
+  },
+  onlyNum: (value) => {
+    return /^[1-9]\d*(\.\d+)?$/.test(value)
   }
 }
