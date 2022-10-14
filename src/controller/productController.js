@@ -112,10 +112,6 @@ module.exports = {
                     }
                 }
             }
-            if (req.files) {
-                let productImage = await uploadFile(req.files[0])
-                req.body.productImage = productImage
-            }
             let filter = {}
             if (title) {
                 req.body.title = title.replace(/  +/g, ' ')
@@ -130,9 +126,10 @@ module.exports = {
                 req.body.style = style.replace(/  +/g, ' ')
                 filter.style = style
             }
-            if (req.files && req.files[0].fieldname == 'productImage') {
+            if (req.files) {
+                if(req.files[0] && req.files[0].fieldname == 'productImage'){
                 let productImage = await uploadFile(req.files[0])
-                filter.productImage = productImage
+                filter.productImage = productImage}
             }
             if (installments) { filter.installments = installments }
             if (isFreeShipping) { filter.isFreeShipping = isFreeShipping }
