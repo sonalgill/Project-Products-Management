@@ -80,7 +80,7 @@ module.exports = {
                 return res.status(404).send({ status: false, message: "Product doesn't exist" })
             if (productExist.isDeleted == true)
                 return res.status(400).send({ status: false, message: "Product is deleted" })
-            productExist = await productModel.findOne({ title: title })
+                productExist = await productModel.findOne({ title: title })
             if (productExist)
                 return res.status(404).send({ status: false, message: "Title already exists!" })
             if (data.hasOwnProperty("title") && !title)

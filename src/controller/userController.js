@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt")
 const awsFunction = require('./aws')
 const uploadFile = awsFunction.uploadFile
 const v = require('../validation/validations')
+const { objectValue, pincodeRegex } = require("../validation/validations")
 
 module.exports = {
     createUser: async (req, res) => {
@@ -87,11 +88,17 @@ module.exports = {
         try {
             let userId = req.params.userId
             let data = req.body
-            let {email, phone, address, password}=data
+            let {fname, lname,email, phone, address, password}=data
             let files =req.files
             let newUser={}
-    
-            if (data.email || data.phone) {
+
+            if (fname) {
+                 newUser["fname"] = fname;
+            }
+            if(lname){
+                newUser["lname"]= lname
+            }
+            if (email || phone) {
                 let dupCredentials = await userModel.findOne({ $or: [{ email: email }, { phone: phone }] })
                 if (dupCredentials && dupCredentials.email == email) {
                     return res.status(400).send({ status: false, message: "This E-mail is already Registered!" })
@@ -103,7 +110,7 @@ module.exports = {
                  newUser["email"]= email
                  newUser["phone"]=phone
             }
-            if (data.password) {
+            if (password) {
                 let saltRound = 10
                 let passwordHash = await bcrypt.hash(password, saltRound)
                 password = passwordHash
@@ -111,7 +118,7 @@ module.exports = {
             }
             if (req.files.length != 0 && req.files[0].fieldname == 'profileImage') {
                 let profilePicUrl = await uploadFile(req.files[0])
-                req.body.profileImage = profilePicUrl
+                newUser["profileImage"]= profilePicUrl
                 
             }
 
@@ -126,7 +133,7 @@ module.exports = {
                     }
     
                     if (address.shipping.pincode) {
-                        if (!pincodeValid.test(address.shipping.pincode)) {
+                        if (!pincodeRegex.test(address.shipping.pincode)) {
                             return res.status(400).send({ status: false, message: "Shipping pincode is incorrect." });
                         }
                         newUser['address.shipping.pincode'] = address.shipping.pincode;
