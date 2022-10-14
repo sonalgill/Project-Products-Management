@@ -86,29 +86,74 @@ module.exports = {
     updateUser: async function (req, res) {
         try {
             let userId = req.params.userId
-            let { email, phone, password } = req.body
+            let data = req.body
+            let {email, phone, address, password}=data
+            let files =req.files
+            let newUser={}
     
-            if (email || phone) {
+            if (data.email || data.phone) {
                 let dupCredentials = await userModel.findOne({ $or: [{ email: email }, { phone: phone }] })
                 if (dupCredentials && dupCredentials.email == email) {
                     return res.status(400).send({ status: false, message: "This E-mail is already Registered!" })
+                    
                 }
                 if (dupCredentials && dupCredentials.phone == phone) {
                     return res.status(400).send({ status: false, message: "This Phone Number is already Registered!" })
                 }
+                 newUser["email"]= email
+                 newUser["phone"]=phone
             }
-            if (password) {
+            if (data.password) {
                 let saltRound = 10
                 let passwordHash = await bcrypt.hash(password, saltRound)
                 password = passwordHash
+                newUser["password"]=password
             }
             if (req.files.length != 0 && req.files[0].fieldname == 'profileImage') {
                 let profilePicUrl = await uploadFile(req.files[0])
                 req.body.profileImage = profilePicUrl
+                
             }
-            req.body = JSON.parse(JSON.stringify(req.body))
-            console.log(req.body)
-            let updateUser = await userModel.findOneAndUpdate({ _id: userId }, { $set: req.body}, { new: true })
+
+            if (address) {
+                if (address.shipping) {
+                    if (address.shipping.street) {
+                        newUser['address.shipping.street'] = address.shipping.street
+                    }
+    
+                    if (address.shipping.city) {
+                        newUser['address.shipping.city'] = address.shipping.city
+                    }
+    
+                    if (address.shipping.pincode) {
+                        if (!pincodeValid.test(address.shipping.pincode)) {
+                            return res.status(400).send({ status: false, message: "Shipping pincode is incorrect." });
+                        }
+                        newUser['address.shipping.pincode'] = address.shipping.pincode;
+                    }
+                }
+    
+                if (address.billing) {
+                    if (address.billing.street) {
+                        newUser['address.billing.street'] = address.billing.street
+                    }
+    
+                    if (address.billing.city) {
+                        newUser['address.billing.city'] = address.billing.city
+                    }
+    
+                    if (address.billing.pincode) {
+                        if (!pincodeValid.test(address.billing.pincode)) {
+                            return res.status(400).send({ status: false, message: "Billing pincode is incorrect." });
+                        }
+                        newUser['address.billing.pincode'] = address.billing.pincode;
+                    }
+                }
+            }
+    
+            // req.body = JSON.parse(JSON.stringify(req.body))
+            // console.log(req.body)
+            let updateUser = await userModel.findOneAndUpdate({ _id: userId }, { $set: newUser}, { new: true })
             res.status(200).send({ status: true, message: "User profile updated!", data: updateUser })
         } catch (err) {
             return res.status(500).send({ status: false, message: err.message })

@@ -91,7 +91,7 @@ module.exports = {
             let findProduct = await productModel.findOne({ _id: productId })
             if (!findProduct)
                 return res.status(404).send({ status: false, message: "Product not found!" })
-            return res.status(200).send({ status: true, message: "User details", data: findProduct })
+            return res.status(200).send({ status: true, message: "Product details", data: findProduct })
         } catch (err) {
             return res.status(500).send({ status: false, Message: err.Message })
         }
