@@ -6,74 +6,52 @@ module.exports = {
         try {
             let { password, fname, lname, email, phone, address } = req.body
 
-            if (!v.validBody(req.body)) {
+            if (!v.validBody(req.body))
                 return res.status(400).send({ status: false, message: "Please Provide Some Data!" })
-            }
-            if (!fname) {
+            if (!fname)
                 return res.status(400).send({ status: false, msg: "fname is mandatory!" })
-            }
-            if (!v.name(fname)) {
+            if (!v.name(fname)) 
                 return res.status(400).send({ status: false, msg: "fname can be in Alphabets Only and without Spacing!" })
-            }
-            if (!lname) {
+            if (!lname)
                 return res.status(400).send({ status: false, msg: "lname is mandatory!" })
-            }
-            if (!v.name(lname)) {
+            if (!v.name(lname))
                 return res.status(400).send({ status: false, msg: "lname can be in Alphabets Only and without Spacing!" })
-            }
-            if (!email) {
+            if (!email)
                 return res.status(400).send({ status: false, msg: "email is mandatory!" })
-            }
-            if (!v.emailRegex(email)) {
+            if (!v.emailRegex(email))
                 return res.status(400).send({ status: false, msg: "Not a Valid E-mail!" })
-            }
-            if (!password) {
+            if (!password)
                 return res.status(400).send({ status: false, msg: "Password is mandatory!" })
-            }
-            if (!v.isValidPassword(password)) {
+            if (!v.isValidPassword(password))
                 return res.status(400).send({ status: false, msg: "Length of the Password can be 8 to 15 !" })
-            }
-            if (!phone) {
+            if (!phone) 
                 return res.status(400).send({ status: false, msg: "Phone is mandatory!" })
-            }
-            if (!v.phoneRegex(phone)) {
+            if (!v.phoneRegex(phone)) 
                 return res.status(400).send({ status: false, msg: "Not a valid Phone Number!" })
-            }
-            if (!address) {
+            if (!address) 
                 return res.status(400).send({ status: false, msg: "Address is mandatory!" })
-            }
-            if (!address.shipping) {
+            if (!address.shipping)
                 return res.status(400).send({ status: false, msg: "Please provide Shipping Address!" })
-            }
             let s = address.shipping
-            if (!s.street || s.street.trim().length == 0) {
+            if (!s.street || s.street.trim().length == 0)
                 return res.status(400).send({ status: false, msg: "Street is mandatory in Shipping Section!" })
-            }
-            if (!s.city || s.city.trim().length == 0) {
+            if (!s.city || s.city.trim().length == 0)
                 return res.status(400).send({ status: false, msg: "City is mandatory in Shipping Section!" })
-            }
-            if (!s.pincode) {
+            if (!s.pincode)
                 return res.status(400).send({ status: false, msg: "Pincode is mandatory in Shipping Section!" })
-            }
-            if (!v.pincodeRegex(s.pincode)) {
+            if (!v.pincodeRegex(s.pincode))
                 return res.status(400).send({ status: false, msg: "In Shipping Section, Pincode can be a 6 digits Number Only!" })
-            }
-            if (!address.billing) {
+            if (!address.billing)
                 return res.status(400).send({ status: false, msg: "Please provide Billing Address!" })
-            }
             let b = address.billing
-            if (!b.street || b.street.trim().length == 0) {
+            if (!b.street || b.street.trim().length == 0)
                 return res.status(400).send({ status: false, msg: "Street is mandatory in Billing Section!" })
-            }
-            if (!b.city || b.city.trim().length == 0) {
+            if (!b.city || b.city.trim().length == 0)
                 return res.status(400).send({ status: false, msg: "City is mandatory in Billing Section!" })
-            }
-            if (!b.pincode) {
+            if (!b.pincode)
                 return res.status(400).send({ status: false, msg: "Pincode is mandatory in Billing Section!" })
-            }
-            if (!v.pincodeRegex(b.pincode)) {
+            if (!v.pincodeRegex(b.pincode))
                 return res.status(400).send({ status: false, msg: "In Billing Section, Pincode can be a 6 digits Number Only!" })
-            }
             next()
         } catch (e) {
             res.status(500).send({ status: false, msg: e.message })
@@ -83,15 +61,12 @@ module.exports = {
     loginUser: (req, res, next) => {
         try {
             let { email, password } = req.body
-            if (!v.validBody(req.body)) {
+            if (!v.validBody(req.body))
                 return res.status(400).send({ status: false, message: "Please Provide Some Data!" })
-            }
-            if (!v.emailRegex(email)) {
+            if (!v.emailRegex(email))
                 return res.status(400).send({ status: false, message: "Please Provide a valid E-mail!" })
-            }
-            if (!v.isValidPassword(password)) {
+            if (!v.isValidPassword(password))
                 return res.status(400).send({ status: false, message: " Please Provide a valid Password!" })
-            }
             next()
         } catch (e) {
             res.status(500).send({ status: false, msg: e.message })
@@ -99,7 +74,7 @@ module.exports = {
     },
 
     updateUser: async (req, res, next) => {
-      //  try {
+        try {
             let userId = req.params.userId
             if (!v.isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Please enter a valid userId!" })
 
@@ -107,18 +82,14 @@ module.exports = {
             if (!findUser) return res.status(404).send({ status: false, message: "User not found!" })
 
             let { fname, lname, email, phone, password, address, profileImage } = req.body
-            if (fname && !v.name(fname)) {
+            if (fname && !v.name(fname))
                 return res.status(400).send({ status: false, message: "Please enter a valid fName!" })
-            }
-            if (lname && !v.name(lname)) {
+            if (lname && !v.name(lname))
                 return res.status(400).send({ status: false, message: "Please enter a valid lName!" })
-            }
-            if (email && !v.emailRegex(email)) {
+            if (email && !v.emailRegex(email))
                 return res.status(400).send({ status: false, message: "Please enter a valid email!" })
-            }
-            if (phone && !v.phoneRegex(phone)) {
+            if (phone && !v.phoneRegex(phone))
                 return res.status(400).send({ status: false, message: "Please enter a valid phone no.!" })
-            }
             if (password && !v.isValidPassword(password)) {
                 return res.status(400).send({ status: false, message: "Length of the Password can be 8 to 15 !" })
             }
@@ -154,8 +125,8 @@ module.exports = {
                 }
             }
             next()
-        // } catch (e) {
-        //     res.status(500).send({ status: false, msg: e.message })
-        // }
+        } catch (e) {
+            res.status(500).send({ status: false, msg: e.message })
+        }
     }
 }

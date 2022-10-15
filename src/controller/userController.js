@@ -89,83 +89,57 @@ module.exports = {
             let userId = req.params.userId
             let data = req.body
             let {fname, lname,email, phone, address, password}=data
-            let files =req.files
-            let newUser={}
-
-            if (fname) {
-                 newUser["fname"] = fname;
-            }
-            if(lname){
-                newUser["lname"]= lname
-            }
+            let filter={}
+            if (fname) {filter["fname"] = fname }
+            if(lname){filter["lname"]= lname}
             if (email || phone) {
                 let dupCredentials = await userModel.findOne({ $or: [{ email: email }, { phone: phone }] })
                 if (dupCredentials && dupCredentials.email == email) {
                     return res.status(400).send({ status: false, message: "This E-mail is already Registered!" })
-                    
                 }
                 if (dupCredentials && dupCredentials.phone == phone) {
                     return res.status(400).send({ status: false, message: "This Phone Number is already Registered!" })
                 }
-                 newUser["email"]= email
-                 newUser["phone"]=phone
             }
+            if(email){filter["email"]=email}
+            if(phone){filter["phone"]=phone}
             if (password) {
                 let saltRound = 10
                 let passwordHash = await bcrypt.hash(password, saltRound)
                 password = passwordHash
-                newUser["password"]=password
+                filter["password"]=password
             }
             if (req.files.length != 0 && req.files[0].fieldname == 'profileImage') {
                 let profilePicUrl = await uploadFile(req.files[0])
-                newUser["profileImage"]= profilePicUrl
-                
+                filter["profileImage"]= profilePicUrl
             }
-
             if (address) {
                 if (address.shipping) {
-                    if (address.shipping.street) {
-                        newUser['address.shipping.street'] = address.shipping.street
-                    }
-    
-                    if (address.shipping.city) {
-                        newUser['address.shipping.city'] = address.shipping.city
-                    }
-    
+                    if (address.shipping.street) { filter['address.shipping.street'] = address.shipping.street}
+                    if (address.shipping.city) {filter['address.shipping.city'] = address.shipping.city}
                     if (address.shipping.pincode) {
                         if (!pincodeRegex.test(address.shipping.pincode)) {
-                            return res.status(400).send({ status: false, message: "Shipping pincode is incorrect." });
+                            return res.status(400).send({ status: false, message: "Shipping pincode is incorrect!" });
                         }
-                        newUser['address.shipping.pincode'] = address.shipping.pincode;
+                        filter['address.shipping.pincode'] = address.shipping.pincode;
                     }
-                }
-    
+               }
                 if (address.billing) {
-                    if (address.billing.street) {
-                        newUser['address.billing.street'] = address.billing.street
-                    }
-    
-                    if (address.billing.city) {
-                        newUser['address.billing.city'] = address.billing.city
-                    }
-    
+                    if (address.billing.street) { filter['address.billing.street'] = address.billing.street}
+                    if (address.billing.city) { filter['address.billing.city'] = address.billing.city}
                     if (address.billing.pincode) {
                         if (!pincodeValid.test(address.billing.pincode)) {
-                            return res.status(400).send({ status: false, message: "Billing pincode is incorrect." });
+                            return res.status(400).send({ status: false, message: "Billing pincode is incorrect!" });
                         }
-                        newUser['address.billing.pincode'] = address.billing.pincode;
+                        filter['address.billing.pincode'] = address.billing.pincode;
                     }
-                }
+               }
             }
-    
-            // req.body = JSON.parse(JSON.stringify(req.body))
-            // console.log(req.body)
-            let updateUser = await userModel.findOneAndUpdate({ _id: userId }, { $set: newUser}, { new: true })
+            let updateUser = await userModel.findOneAndUpdate({ _id: userId }, { $set: filter}, { new: true, upsert: true })
             res.status(200).send({ status: true, message: "User profile updated!", data: updateUser })
         } catch (err) {
             return res.status(500).send({ status: false, message: err.message })
         }
-    
     }
 }
 

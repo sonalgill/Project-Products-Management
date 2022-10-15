@@ -4,7 +4,7 @@ const productModel = require('../model/productModel')
 module.exports = {
     createProduct: (req, res, next) => {
         try {
-            let data = req.body
+            let data = JSON.parse(JSON.stringify(req.body))
             let { title, description, price, currencyId, currencyFormat, isFreeShipping, style, installments, availableSizes } = req.body
             if (!title || !title.trim().length)
                 return res.status(400).send({ status: false, msg: "Title is Mandatory. Also, it can't be an Empty String!" })
@@ -23,11 +23,11 @@ module.exports = {
                     return res.status(400).send({ status: false, msg: "isFreeShipping can be true or false only!" })
                 }
             }
-            if (Object.hasOwnProperty.bind(data)("style") && !style)
+            if (data.hasOwnProperty("style") && !style)
                 return res.status(400).send({ status: false, msg: "Style can not be an Empty String!" })
             if (!availableSizes)
                 return res.status(400).send({ status: false, msg: "AvailableSizes is Mandatory!" })
-            if (Object.hasOwnProperty.bind(data)("installments") && !installments)
+            if (data.hasOwnProperty("installments") && !installments)
                 return res.status(400).send({ status: false, msg: "Installments can't be an Empty String!" })
             if (installments) {
                 if (!v.onlyNum(installments) || installments.length >= 3)

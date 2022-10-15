@@ -33,7 +33,7 @@ module.exports = {
                 let productImage = await uploadFile(req.files[0])
                 req.body.productImage = productImage
             }
-            availableSizes = availableSizes.replace(/  +/g, '').split(",")
+            availableSizes = availableSizes.split(",").map((s) => s.trim())
             req.body.availableSizes = availableSizes
             let sizes = ["S", "XS", "M", "X", "L", "XXL", "XL"]
 
@@ -57,7 +57,7 @@ module.exports = {
             let { size, name, priceGreaterThan, priceLessThan, priceSort } = data
             let filter = { isDeleted: false }
             if (size) {
-                let sizeArray = size.trim().toUpperCase().split(",").map((s) => s.trim())
+                let sizeArray = size.toUpperCase().split(",").map((s) => s.trim())
                 filter.availableSizes = { $all: sizeArray }
             }
             if (name) {
@@ -100,10 +100,9 @@ module.exports = {
     updateById: async (req, res) => {
         try {
             let productId = req.params.productId
-            let { title, description, price, isFreeShipping, productImage, style, availableSizes, installments, currencyFormat } = req.body
-
+            let { title, description, price, isFreeShipping, style, availableSizes, installments } = req.body
             if (availableSizes) {
-                availableSizes = availableSizes.replace(/  +/g, '').split(",")
+                availableSizes = availableSizes.split(",").map((s) => s.trim())
                 req.body.availableSizes = availableSizes
                 let sizes = ["S", "XS", "M", "X", "L", "XXL", "XL"]
                 for (let i = 0; i < availableSizes.length; i++) {
@@ -138,7 +137,7 @@ module.exports = {
             let finalUpdate = await productModel.findByIdAndUpdate(
                 { _id: productId },
                 { $set: filter, $push: { availableSizes: { $each: availableSizes } } },
-                { new: true });
+                { new: true, upsert: true });
             return res.status(200).send({ status: true, message: finalUpdate })
         } catch (error) {
             return res.status(500).send({ status: false, message: error.message })
