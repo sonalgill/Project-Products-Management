@@ -118,9 +118,6 @@ module.exports = {
                     if (address.shipping.street) { filter['address.shipping.street'] = address.shipping.street}
                     if (address.shipping.city) {filter['address.shipping.city'] = address.shipping.city}
                     if (address.shipping.pincode) {
-                        if (!pincodeRegex.test(address.shipping.pincode)) {
-                            return res.status(400).send({ status: false, message: "Shipping pincode is incorrect!" });
-                        }
                         filter['address.shipping.pincode'] = address.shipping.pincode;
                     }
                }
@@ -128,9 +125,6 @@ module.exports = {
                     if (address.billing.street) { filter['address.billing.street'] = address.billing.street}
                     if (address.billing.city) { filter['address.billing.city'] = address.billing.city}
                     if (address.billing.pincode) {
-                        if (!pincodeValid.test(address.billing.pincode)) {
-                            return res.status(400).send({ status: false, message: "Billing pincode is incorrect!" });
-                        }
                         filter['address.billing.pincode'] = address.billing.pincode;
                     }
                }

@@ -115,15 +115,15 @@ module.exports = {
                     return res.status(400).send({ status: false, msg: "In Shipping Section, Pincode should be a 6 digit Number Only!" })
                 }
             }
-            if (data.address && data.address.billing) {
-                let b = address[billing]
+            if (address && address.billing) {
+                let b = address.billing
                 if (b.street && b.street.trim().length == 0) {
                     return res.status(400).send({ status: false, msg: "Street can not be an Empty String in Shipping Section!" })
                 }
                 if (b.city && b.city.trim().length == 0) {
                     return res.status(400).send({ status: false, msg: "City can not be an Empty String in Shipping Section!" })
                 }
-                if (b.pincode && !b.pincodeRegex(b.pincode)) {
+                if (b.pincode && !v.pincodeRegex(b.pincode)) {
                     return res.status(400).send({ status: false, msg: "In Shipping Section, Pincode should be a 6 digit Number Only!" })
                 }
             }
