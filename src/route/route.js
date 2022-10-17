@@ -91,7 +91,7 @@ router.post(
 )
 
 // update cart
-router.post("/users/:userId/cart",cartController.updateCart)
+router.put("/users/:userId/cart",cartController.updateCart)
 
 //=========================== if endpoint is not correct==========================================
 
