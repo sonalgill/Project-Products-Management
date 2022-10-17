@@ -45,6 +45,7 @@
     
 const cartModel = require('../model/cartModel')
 const productModel = require('../model/productModel')
+const { isValidObjectId } = require('../validation/validations')
 const v = require('../validation/validations')
 
 module.exports = {
@@ -164,3 +165,32 @@ module.exports = {
         }
     }
 }
+//////////////get api//////////
+
+let getCart = async function(req,res){
+    try{
+        let userId = req.params.userId
+        if(!userId){
+            return res.status(400).send({status:false, message:"Please provide UserId"})}
+        if(!v.isValidObjectId(userId)){
+            return res.status(400).send({status:false, message:"Please provide vaild UserId"})
+        }
+        let isUserExist = await userModel.findId({userId})
+        if(!isUserExist){
+            return res.status(404).send({status:false, message:"User cannot be found"})
+
+        }
+        let findCart = await cartModel.findById({userId})
+        if(!findCart){
+            return res.status(404).send({status:false, message:"No cart for this user "})}
+        if(findCart.items.length){
+            return res.status(404).send({status:false, message:"User have nothing in Cart"})
+        }
+        return res.status(200).send({status:false, message:"Cart Details", data:findCart})
+
+        }catch(error){
+            return res.status(500).send({status:false, message:error.message})
+        }
+        }
+        
+
