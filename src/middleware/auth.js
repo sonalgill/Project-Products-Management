@@ -36,6 +36,9 @@ module.exports = {
             if (!mongoose.Types.ObjectId.isValid(userId)) {
                 return res.status(400).send({ status: false, message: "please provide vaild userId" })
             }
+            let user = await userModel.findById(userId)
+            if (!user)
+                return res.status(400).send({ status: false, msg: "User doesn't exists!" })
             if (userId != req.decode.userId) {
                 return res.status(403).send({ status: false, message: "User is not Authorized" })
             }
