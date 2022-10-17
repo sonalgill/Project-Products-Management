@@ -110,7 +110,7 @@ module.exports = {
             if (!productId) return res.status(400).send({ status: false, msg: "Please enter productId" })
             if (!v.isValidObjectId(productId)) return res.status(400).send({ status: false, msg: "Please enter a valid productId" })
 
-            if (removeProduct != 0 || removeProduct != 1) return res.status(400).send({ status: false, msg: "Remove product can only be 0 and 1" })
+            if (!(removeProduct == 0 || removeProduct==1)) return res.status(400).send({ status: false, msg: "Remove product can only be 0 and 1" })
 
             let cart = await cartModel.findOne({ userId })
             if (!cart) return res.status(400).send({ status: false, msg: "Cart is not present in database" })
@@ -125,7 +125,7 @@ module.exports = {
             let totalItems = undefined
 
             if (removeProduct == 1) {
-                for (let i = 0; i < cartItems.length; i++) {
+                for (let i in cartItems) {
                     if (cartItems[i].productId == productId) {
                         ProductQuantity = cartItems[i].quantity-1
                         cartItems[i].quantity=ProductQuantity
@@ -142,7 +142,7 @@ module.exports = {
             }
 
             if(removeProduct==0){
-                for(let i=0;i<cartItems.length;i++){
+                for(let i in cartItems){
                     if(cartItems[i].productId==productId){
                         totalPrice = cart.totalPrice-(product.price*cartItems[i].quantity)
                         totalItems = cart.totalItems-1
