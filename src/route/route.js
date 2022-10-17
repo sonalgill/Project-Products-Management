@@ -3,8 +3,10 @@ const router = express.Router();
 
 const userController = require('../controller/userController')
 const productController = require('../controller/productController')
+const cartController = require('../controller/cartController')
 const validUser = require('../validation/userValidation')
 const validProduct = require('../validation/productValidation')
+const validCart = require('../validation/cartValidation')
 const mid = require('../middleware/auth')
 
 //-------------user---------
@@ -76,6 +78,17 @@ router.delete(
   productController.deleteProductId
 )
 
+
+//----------cart----------
+
+//create cart
+router.post(
+  '/users/:userId/cart',
+  mid.authentication,
+  mid.authorisation,
+  validCart.createCart,
+  cartController.createCart
+)
 
 //=========================== if endpoint is not correct==========================================
 

@@ -10,7 +10,7 @@ module.exports = {
                 return res.status(400).send({ status: false, message: "Please Provide Some Data!" })
             if (!fname)
                 return res.status(400).send({ status: false, msg: "fname is mandatory!" })
-            if (!v.name(fname)) 
+            if (!v.name(fname))
                 return res.status(400).send({ status: false, msg: "fname can be in Alphabets Only and without Spacing!" })
             if (!lname)
                 return res.status(400).send({ status: false, msg: "lname is mandatory!" })
@@ -24,11 +24,11 @@ module.exports = {
                 return res.status(400).send({ status: false, msg: "Password is mandatory!" })
             if (!v.isValidPassword(password))
                 return res.status(400).send({ status: false, msg: "Length of the Password can be 8 to 15 !" })
-            if (!phone) 
+            if (!phone)
                 return res.status(400).send({ status: false, msg: "Phone is mandatory!" })
-            if (!v.phoneRegex(phone)) 
+            if (!v.phoneRegex(phone))
                 return res.status(400).send({ status: false, msg: "Not a valid Phone Number!" })
-            if (!address) 
+            if (!address)
                 return res.status(400).send({ status: false, msg: "Address is mandatory!" })
             if (!address.shipping)
                 return res.status(400).send({ status: false, msg: "Please provide Shipping Address!" })
@@ -76,31 +76,34 @@ module.exports = {
     updateUser: async (req, res, next) => {
         try {
             let userId = req.params.userId
+            let data = req.body
             if (!v.isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Please enter a valid userId!" })
 
             let findUser = await userModel.findOne({ _id: userId })
             if (!findUser) return res.status(404).send({ status: false, message: "User not found!" })
 
             let { fname, lname, email, phone, password, address, profileImage } = req.body
-            if (fname && !v.name(fname))
+            if (!v.validBody(data))
+                return res.status(400).send({ status: false, msg: "Provide some Data to be Updated!" })
+            if (data.fname && !fname || !v.name(fname))
                 return res.status(400).send({ status: false, message: "Please enter a valid fName!" })
-            if (lname && !v.name(lname))
+            if (data.lname && !lname || !v.name(lname))
                 return res.status(400).send({ status: false, message: "Please enter a valid lName!" })
-            if (email && !v.emailRegex(email))
+            if (data.email && !email ||  !v.emailRegex(email))
                 return res.status(400).send({ status: false, message: "Please enter a valid email!" })
-            if (phone && !v.phoneRegex(phone))
+            if (data.phone && !v.phoneRegex(phone))
                 return res.status(400).send({ status: false, message: "Please enter a valid phone no.!" })
-            if (password && !v.isValidPassword(password)) {
+            if (data.password && !v.isValidPassword(password)) {
                 return res.status(400).send({ status: false, message: "Length of the Password can be 8 to 15 !" })
             }
-            if (profileImage && !v.objectValue(profileImage)) {
+            if (data.profileImage && !v.objectValue(profileImage)) {
                 return res.status(400).send({ status: false, message: "ProfileImage can contain a file Only!" })
             }
-            if (Object.keys(req.body).includes('profileImage') &&
+            if (data.profileImage &&
                 (!profileImage || (req.files.length == 0 || req.files[0].fieldname != 'profileImage'))) {
                 return res.status(400).send({ status: false, msg: "Please attach a file in ProfileImage!" })
             }
-            if (address && address.shipping) {
+            if (data.address && data.address.shipping) {
                 let s = address.shipping
                 if (s.street && s.street.trim().length == 0) {
                     return res.status(400).send({ status: false, msg: "Street can not be an Empty String in Shipping Section!" })
@@ -112,7 +115,7 @@ module.exports = {
                     return res.status(400).send({ status: false, msg: "In Shipping Section, Pincode should be a 6 digit Number Only!" })
                 }
             }
-            if (address && address.billing) {
+            if (data.address && data.address.billing) {
                 let b = address[billing]
                 if (b.street && b.street.trim().length == 0) {
                     return res.status(400).send({ status: false, msg: "Street can not be an Empty String in Shipping Section!" })
@@ -124,7 +127,7 @@ module.exports = {
                     return res.status(400).send({ status: false, msg: "In Shipping Section, Pincode should be a 6 digit Number Only!" })
                 }
             }
-            next()
+           next()
         } catch (e) {
             res.status(500).send({ status: false, msg: e.message })
         }

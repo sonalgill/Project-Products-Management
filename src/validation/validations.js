@@ -34,5 +34,8 @@ module.exports = {
   },
   onlyNum: (value) => {
     return /^[1-9]\d*(\.\d+)?$/.test(value)
+  },
+  num: (value) => {
+    return /^[0-9]+$/.test(value)
   }
 }
