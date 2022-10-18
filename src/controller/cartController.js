@@ -144,3 +144,31 @@ module.exports = {
     }
 }  
 
+//////delete api/////////////////
+let deleteCart = async function(req,res){
+    try{
+        let userId= req.params.userId
+        if(!userId){
+            return res.status(400).send({status:false, message:"Please provide Userid"})
+        }
+        if(!v.isValidObjectId){
+            return res.status(400).send({status:false, message:"Please provide vaild userId"})
+        }
+         let findUser = await userModel.findById({userId})
+         if(!findUser){
+            return res.status(404).send({status:false, message:"user Doesn't exist"})
+         }
+         let findCart =await cartModel.findOne({userId})
+         if(!findCart){
+            return res.status(404).send({status:false, message:"No cart has found for this user id"})
+         }
+         if(findCart.items.length==0){
+            return res.status(404).send({status:false, message:"Cart Items has been deleted"})
+         }
+         let newCart = await cartModel.findByIdAndUpdate(findCart,{ $set:{items:[], totalItems:0, totalPrice:0}},{new:true})
+         return res.status(204).send({status:false, message: "Cart Deleted Successfully", data:newCart})
+
+    }catch(error){
+        return res.status(500).send({status:false, message:error.message})
+    }
+}
