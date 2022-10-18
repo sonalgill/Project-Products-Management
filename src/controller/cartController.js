@@ -1,48 +1,3 @@
-// {
-//     userId: {ObjectId, refs to User, mandatory, unique},
-//     items: [{
-//       productId: {ObjectId, refs to Product model, mandatory},
-//       quantity: {number, mandatory, min 1}
-//     }],
-//     totalPrice: {number, mandatory, comment: "Holds total price of all the items in the cart"},
-//     totalItems: {number, mandatory, comment: "Holds total number of items in the cart"},
-//     createdAt: {timestamp},
-//     updatedAt: {timestamp},
-//   }
-
-// ### PUT /users/:userId/cart (Remove product / Reduce a product's quantity from the cart)
-// - Updates a cart by either decrementing the quantity of a product by 1 or deleting a product from the cart.
-// - Get cart id in request body.
-// - Get productId in request body.
-// - Get key 'removeProduct' in request body. 
-// - Make sure that cart exist.
-// - Key 'removeProduct' denotes whether a product is to be removed({removeProduct: 0}) or its quantity has to be decremented by 1({removeProduct: 1}).
-// - Make sure the userId in params and in JWT token match.
-// - Make sure the user exist
-// - Get product(s) details in response body.
-// - Check if the productId exists and is not deleted before updating the cart.
-// - __Response format__
-//   - _**On success**_ - Return HTTP status 200. Also return the updated cart document. The response should be a JSON object like [this](#successful-response-structure)
-//   - _**On error**_ - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like [this](#error-response-structure)
-
-// {
-//     "_id": ObjectId("88abc190ef0288abc190ef88"),
-//     userId: ObjectId("88abc190ef0288abc190ef02"),
-//     items: [{
-//       productId: ObjectId("88abc190ef0288abc190ef55"),
-//       quantity: 2
-//     }, {
-//       productId: ObjectId("88abc190ef0288abc190ef60"),
-//       quantity: 1
-//     }],
-//     totalPrice: 50.99,
-//     totalItems: 2,
-//     createdAt: "2021-09-17T04:25:07.803Z",
-//     updatedAt: "2021-09-17T04:25:07.803Z",
-//   }
-
-
-    
 const cartModel = require('../model/cartModel')
 const productModel = require('../model/productModel')
 const v = require('../validation/validations')
@@ -76,7 +31,7 @@ module.exports = {
                             { _id: cartId, 
                             'items.productId': items.productId},
                             { $inc: { totalPrice: totalPrice, "items.$.quantity": items.quantity} },
-                            { new: true, upsert: true }
+                            { new: true }
                         )
                         return res.status(201).send({ status: true, msg: "Product Added to cart Successfully!", data: cart })
                     }
@@ -84,7 +39,7 @@ module.exports = {
                 let cart = await cartModel.findByIdAndUpdate(
                     { _id: cartId },
                     { $push: { items: items }, $inc: { totalPrice: totalPrice, totalItems: 1 } },
-                    { new: true, upsert: true }
+                    { new: true}
                 )
                 return res.status(201).send({ status: true, msg: "Product Added to cart Successfully!", data: cart })
             }
@@ -164,3 +119,5 @@ module.exports = {
         }
     }
 }
+
+// JSON.parse(JSON.stringify())
