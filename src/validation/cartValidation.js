@@ -7,7 +7,7 @@ module.exports = {
     createCart: async (req, res, next) => {
         try {
             let userId = req.params.userId
-            let { items, cartId } = req.body
+            let { productId, quantity, cartId } = req.body
             if (!v.isValidObjectId(userId))
                 return res.status(400).send({ status: false, msg: "Please provide a Valid UserID!" })
             let cartUser = await cartModel.findOne({ userId: userId })
@@ -15,13 +15,11 @@ module.exports = {
                 return res.status(400).send({ status: false, msg: "Cart is already created.Please provide CartId!" })
             if (!v.validBody(req.body))
                     return res.status(400).send({ status: false, msg: "Provide some Data in the Cart!" })
-            if (!items)
-                return res.status(400).send({ status: false, msg: "Items are required!" })
-            if (!items.productId)
+            if (!productId)
                 return res.status(400).send({ status: false, msg: "ProductId is required!" })
-            if (!v.isValidObjectId(items.productId))
+            if (!v.isValidObjectId(productId))
                 return res.status(400).send({ status: false, msg: "Please provide a Valid ProductId!" })
-            if (items.quantity && !v.num(items.quantity))
+            if (quantity && !v.num(quantity))
                 return res.status(400).send({ status: false, msg: "Quantity can be a Number Only!" })
             next()
         } catch (e) {

@@ -91,7 +91,17 @@ router.post(
 )
 
 // update cart
-router.put("/users/:userId/cart",cartController.updateCart)
+router.put(
+  "/users/:userId/cart",
+  cartController.updateCart)
+
+
+// get product
+
+router.get(
+  '/users/:userId/cart',
+  cartController.getCart
+)
 
 //=========================== if endpoint is not correct==========================================
 

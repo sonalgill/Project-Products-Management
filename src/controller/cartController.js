@@ -1,5 +1,7 @@
 const cartModel = require('../model/cartModel')
 const productModel = require('../model/productModel')
+const userModel = require('../model/userModel')
+const { isValidObjectId } = require('../validation/validations')
 const v = require('../validation/validations')
 
 module.exports = {
@@ -7,7 +9,7 @@ module.exports = {
         try {
             let data = req.body
             let userId = req.params.userId
-            let { items, cartId } = data
+            let {cartId, productId } = data
             let sameCartUser
             if (cartId) {
                 if (!v.isValidObjectId(cartId))
@@ -16,39 +18,61 @@ module.exports = {
                 if (!sameCartUser)
                     return res.status(400).send({ status: false, msg: "This CartId doesn't belong to this User!!" })
             }
-            let product = await productModel.findById(items.productId)
+            let product = await productModel.findById(productId)
             if (!product)
                 return res.status(400).send({ status: false, msg: "Product doesn't exists!" })
-                if(!items.quantity){ items.quantity = 1}
-            let totalPrice = product.price * items.quantity
+                if(!data.quantity){
+                    req.body.quantity = 1
+                quantity = req.body.quantity}
+            let totalPrice = product.price * quantity
             
             
             if (cartId) {
                 let productPresent = sameCartUser['items']
                 for (let i = 0; i < productPresent.length; i++) {
-                    if (productPresent[i].productId == items.productId) {
+                    if (productPresent[i].productId == productId) {
                         let cart = await cartModel.findOneAndUpdate(
                             { _id: cartId, 
-                            'items.productId': items.productId},
-                            { $inc: { totalPrice: totalPrice, "items.$.quantity": items.quantity} },
+                            'items.productId': productId},
+                            { $inc: { totalPrice: totalPrice, "items.$.quantity": quantity} },
                             { new: true }
                         )
-                        return res.status(201).send({ status: true, msg: "Product Added to cart Successfully!", data: cart })
+                        return res.status(201).send({ status: true, message: "Success", data: cart })
                     }
                 }
                 let cart = await cartModel.findByIdAndUpdate(
                     { _id: cartId },
-                    { $push: { items: items }, $inc: { totalPrice: totalPrice, totalItems: 1 } },
+                    { $push: { items: {productId: productId, quantity: quantity} }, $inc: { totalPrice: totalPrice, totalItems: 1 } },
                     { new: true}
                 )
-                return res.status(201).send({ status: true, msg: "Product Added to cart Successfully!", data: cart })
+                return res.status(201).send({ status: true, message: "Success", data: cart })
             }
-            let cart = await cartModel.create({ userId: userId, ...data, totalPrice: totalPrice, totalItems: 1 })
-            return res.status(201).send({ status: true, msg: "Product Added to cart Successfully!", data: cart })
+            let cart = await cartModel.create({ userId: userId, items: {productId: productId, quantity: quantity}, totalPrice: totalPrice, totalItems: 1})
+            return res.status(201).send({ status: true, message: "Success", data: cart })
         } catch (e) {
             return res.status(500).send({ status: false, msg: e.message })
         }
     },
+
+    getCart : async function(req,res){
+        try{
+            let userId = req.params.userId
+            if(!userId){
+                return res.status(400).send({status:false, message:"Please provide UserId"})}
+            if(!v.isValidObjectId(userId)){
+                return res.status(400).send({status:false, message:"Please provide vaild UserId"})
+            }
+            let findCart = await cartModel.findOne({userId: userId})
+            if(!findCart){
+                return res.status(404).send({status:false, message:"No cart for this user "})}
+            return res.status(200).send({status:true, message:"Success", data:findCart})
+    
+            }catch(error){
+                return res.status(500).send({status:false, message:error.message})
+            }
+            },
+
+
     updateCart: async (req, res) => {
         try {
             let data = req.body
@@ -65,7 +89,7 @@ module.exports = {
             if (!productId) return res.status(400).send({ status: false, msg: "Please enter productId" })
             if (!v.isValidObjectId(productId)) return res.status(400).send({ status: false, msg: "Please enter a valid productId" })
 
-            if (removeProduct != 0 || removeProduct != 1) return res.status(400).send({ status: false, msg: "Remove product can only be 0 and 1" })
+            if (!(removeProduct == 0 || removeProduct==1)) return res.status(400).send({ status: false, msg: "Remove product can only be 0 and 1" })
 
             let cart = await cartModel.findOne({ userId })
             if (!cart) return res.status(400).send({ status: false, msg: "Cart is not present in database" })
@@ -80,7 +104,7 @@ module.exports = {
             let totalItems = undefined
 
             if (removeProduct == 1) {
-                for (let i = 0; i < cartItems.length; i++) {
+                for (let i in cartItems) {
                     if (cartItems[i].productId == productId) {
                         ProductQuantity = cartItems[i].quantity-1
                         cartItems[i].quantity=ProductQuantity
@@ -97,7 +121,7 @@ module.exports = {
             }
 
             if(removeProduct==0){
-                for(let i=0;i<cartItems.length;i++){
+                for(let i in cartItems){
                     if(cartItems[i].productId==productId){
                         totalPrice = cart.totalPrice-(product.price*cartItems[i].quantity)
                         totalItems = cart.totalItems-1
@@ -112,12 +136,11 @@ module.exports = {
                 totalItems = 0
             }
             let updateCart = await cartModel.findOneAndUpdate({_id:cartId},{items:cartItems,totalPrice:totalPrice,totalItems:totalItems},{new:true})
-            return res.status(200).send({status:true,msg:"success",data:updateCart})
+            return res.status(200).send({status:true,message:"Success",data:updateCart})
 
         } catch (err) {
             return res.status(500).send({ status: false, msg: err.message })
         }
     }
-}
+}  
 
-// JSON.parse(JSON.stringify())
