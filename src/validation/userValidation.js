@@ -89,7 +89,7 @@ module.exports = {
                 return res.status(400).send({ status: false, message: "Please enter a valid fName!" })
             if (data.lname && !lname || !v.name(lname))
                 return res.status(400).send({ status: false, message: "Please enter a valid lName!" })
-            if (data.email && !email ||  !v.emailRegex(email))
+            if (data.email &&  !v.emailRegex(email))
                 return res.status(400).send({ status: false, message: "Please enter a valid email!" })
             if (data.phone && !v.phoneRegex(phone))
                 return res.status(400).send({ status: false, message: "Please enter a valid phone no.!" })

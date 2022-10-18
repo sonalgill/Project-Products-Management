@@ -45,7 +45,7 @@ module.exports = {
             req.body.description = description.replace(/  +/g, ' ')
             if (style) { req.body.style = style.replace(/  +/g, ' ') }
             let product = await productModel.create(req.body)
-            res.status(201).send({ status: true, message: "Product created Successfully!", data: product })
+            res.status(201).send({ status: true, message: "Success", data: product })
         } catch (e) {
             res.status(500).send({ status: false, msg: e.message })
         }
@@ -76,7 +76,7 @@ module.exports = {
 
             if (productList.length == 0) return res.status(404).send({ status: false, message: "No products available with this spec" })
 
-            return res.status(200).send({ status: true, message: "product Lists", data: productList })
+            return res.status(200).send({ status: true, message: "Success", data: productList })
         } catch (err) {
             return res.status(500).send({ status: false, message: err.message })
         }
@@ -91,7 +91,7 @@ module.exports = {
             let findProduct = await productModel.findOne({ _id: productId })
             if (!findProduct)
                 return res.status(404).send({ status: false, message: "Product not found!" })
-            return res.status(200).send({ status: true, message: "Product details", data: findProduct })
+            return res.status(200).send({ status: true, message: "Success", data: findProduct })
         } catch (err) {
             return res.status(500).send({ status: false, Message: err.Message })
         }
@@ -138,7 +138,7 @@ module.exports = {
                 { _id: productId },
                 { $set: filter, $push: { availableSizes: { $each: availableSizes } } },
                 { new: true, upsert: true });
-            return res.status(200).send({ status: true, message: finalUpdate })
+            return res.status(200).send({ status: true, message: "Success", data: finalUpdate })
         } catch (error) {
             return res.status(500).send({ status: false, message: error.message })
         }
