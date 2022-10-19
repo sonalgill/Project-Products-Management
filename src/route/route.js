@@ -8,7 +8,7 @@ const orderController = require("../controller/orderController")
 const validUser = require('../validation/userValidation')
 const validProduct = require('../validation/productValidation')
 const validCart = require('../validation/cartValidation')
-const mid = require('../middleware/auth');
+const mid = require('../middleware/auth')
 
 //-------------user---------
 
@@ -119,6 +119,12 @@ router.delete("/users/:userId/cart",
 
 
 //---------order-----------------
+// create order
+router.post("/users/:userId/orders",
+mid.authentication,
+ mid.authorisation,
+orderController.createorder,
+)
 
 //updateOrder
 router.put(
