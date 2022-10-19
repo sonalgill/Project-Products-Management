@@ -54,7 +54,7 @@ module.exports = {
         }
     },
 
-    getCart : async function(req,res){
+    getCart : async function(req,res, next){
         try{
             let userId = req.params.userId
             if(!userId){
@@ -62,7 +62,7 @@ module.exports = {
             if(!v.isValidObjectId(userId)){
                 return res.status(400).send({status:false, message:"Please provide vaild UserId"})
             }
-            let findCart = await cartModel.findOne({userId: userId})
+            let findCart = await cartModel.findOne({userId: userId}).populate(([["userId","items[0].productId"]])            )
             if(!findCart){
                 return res.status(404).send({status:false, message:"No cart for this user "})}
             return res.status(200).send({status:true, message:"Success", data:findCart})

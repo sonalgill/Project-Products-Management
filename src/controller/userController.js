@@ -69,7 +69,7 @@ module.exports = {
         }
     },
     
-    getUser: async function (req, res) {
+    getUser: async function (req, res, next) {
         try {
             let userId = req.params.userId
             if (!v.isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Please enter a valid userId" })
@@ -77,7 +77,6 @@ module.exports = {
             let findUser = await userModel.findOne({ _id: userId })
             if (!findUser)
                 return res.status(404).send({ status: false, message: "User not found!" })
-    
             return res.status(200).send({ status: true, message: "User profile details", data: findUser })
         } catch (err) {
             return res.status(500).send({ status: false, message: err.message })
