@@ -121,16 +121,16 @@ router.delete("/users/:userId/cart",
 //---------order-----------------
 // create order
 router.post("/users/:userId/orders",
-mid.authentication,
- mid.authorisation,
+//mid.authentication,
+// mid.authorisation,
 orderController.createorder,
 )
 
 //updateOrder
 router.put(
   '/users/:userId/orders',
-  mid.authentication,
-  mid.authorisation,
+ // mid.authentication,
+ // mid.authorisation,
   orderController.updateOrder
 )
 
