@@ -93,14 +93,26 @@ router.post(
 // update cart
 router.put(
   "/users/:userId/cart",
+  mid.authentication,
+  mid.authorisation,
   cartController.updateCart)
 
 
-// get product
+// get cart
 
 router.get(
   '/users/:userId/cart',
+  mid.authentication,
+  mid.authorisation,
   cartController.getCart
+)
+
+// Delete cart
+
+router.delete("/users/:userId/cart",
+  mid.authentication,
+  mid.authorisation,
+  cartController.deleteCart
 )
 
 //=========================== if endpoint is not correct==========================================

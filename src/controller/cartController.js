@@ -89,13 +89,13 @@ module.exports = {
             if (!productId) return res.status(400).send({ status: false, msg: "Please enter productId" })
             if (!v.isValidObjectId(productId)) return res.status(400).send({ status: false, msg: "Please enter a valid productId" })
 
-            if (!(removeProduct == 0 || removeProduct==1)) return res.status(400).send({ status: false, msg: "Remove product can only be 0 and 1" })
+            if (!(removeProduct == 0 || removeProduct == 1)) return res.status(400).send({ status: false, msg: "Remove product can only be 0 and 1" })
 
             let cart = await cartModel.findOne({ userId })
             if (!cart) return res.status(400).send({ status: false, msg: "Cart is not present in database" })
             if (cart.items.length == 0) return res.status(400).send({ status: false, msg: "Cart is empty" })
 
-            let product = await productModel.findOne({ productId })
+            let product = await productModel.findOne({ _id:productId })
             if (!product) return res.status(404).send({ status: false, msg: "Product not found" })
 
             let cartItems = cart.items
@@ -106,32 +106,33 @@ module.exports = {
             if (removeProduct == 1) {
                 for (let i in cartItems) {
                     if (cartItems[i].productId == productId) {
-                        ProductQuantity = cartItems[i].quantity-1
-                        cartItems[i].quantity=ProductQuantity
+                        ProductQuantity = cartItems[i].quantity - 1
+                        cartItems[i].quantity = ProductQuantity
                         totalPrice = cart.totalPrice - product.price
 
-                        if(cartItems[i].quantity == 0){
-                            cartItems.splice(i,1)
-                            totalItems=cart.totalItems-1
+                        if (cartItems[i].quantity == 0) {
+                            cartItems.splice(i, 1)
+                            totalItems = cart.totalItems - 1
                         }
                         break;
                     }
                 }
-               
+                
+                
             }
 
-            if(removeProduct==0){
-                for(let i in cartItems){
-                    if(cartItems[i].productId==productId){
-                        totalPrice = cart.totalPrice-(product.price*cartItems[i].quantity)
-                        totalItems = cart.totalItems-1
-                        cartItems.splice(i,1)
+            if (removeProduct == 0) {
+                for (let i in cartItems) {
+                    if (cartItems[i].productId == productId) {
+                        totalPrice = cart.totalPrice - (product.price * cartItems[i].quantity)
+                        totalItems = cart.totalItems - 1
+                        cartItems.splice(i, 1)
                         break;
                     }
 
                 }
             }
-            if(cartItems.length==0){
+            if (cartItems.length == 0) {
                 totalPrice = 0
                 totalItems = 0
             }
