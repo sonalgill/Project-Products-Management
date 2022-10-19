@@ -12,10 +12,10 @@ module.exports = {
             let { cartId, cancellable, status } = req.body
 
             let cart = await cartModel.findOne({ _id: cartId, userId: userId, isDeleted: false })
-            if (!cart) 
-            return res.status(404).send({ status: false, message: "cart doesn't exist!" })
+            if (!cart)
+                return res.status(404).send({ status: false, message: "cart doesn't exist!" })
             if (cart.userId != userId)
-             return res.status(404).send({ status: false, message: "This cart doesn't belong to this user!" })
+                return res.status(404).send({ status: false, message: "This cart doesn't belong to this user!" })
 
             let items = cart.items
             let totalQuantity = 0
@@ -25,8 +25,8 @@ module.exports = {
 
             let orderData = cart.toObject()
             delete orderData["_id"]
-            orderData.totalQuantity=totalQuantity
-            
+            orderData.totalQuantity = totalQuantity
+
             if (cancellable) {
                 if (cancellable != true || false) return res.status(400).send({ status: false, message: "Cancellable can only be boolean" })
                 orderData["cancellable"] = cancellable
@@ -36,7 +36,7 @@ module.exports = {
             }
             let orderCreation = await orderModel.create(orderData)
             await cartModel.findOneAndUpdate({ _id: cartId, userId: userId, isDeleted: false }, { $set: { items: [], totalPrice: 0, totalQuantity: 0 } })
-            return res.status(201).send({ status: true, message: "Succcess", data: orderCreation })
+            return res.status(201).send({ status: true, message: "Success", data: orderCreation })
         } catch (err) {
             return res.status(500).send({ status: false, message: err.message })
         }

@@ -5,7 +5,6 @@ module.exports = {
     createUser: (req, res, next) => {
         try {
             let { password, fname, lname, email, phone, address } = req.body
-
             if (!v.validBody(req.body))
                 return res.status(400).send({ status: false, message: "Please Provide Some Data!" })
             if (!fname)
@@ -30,6 +29,8 @@ module.exports = {
                 return res.status(400).send({ status: false, msg: "Not a valid Phone Number!" })
             if (!address)
                 return res.status(400).send({ status: false, msg: "Address is mandatory!" })
+                if(typeof(address) == 'string'){
+            address = JSON.parse(address)}
             if (!address.shipping)
                 return res.status(400).send({ status: false, msg: "Please provide Shipping Address!" })
             let s = address.shipping
