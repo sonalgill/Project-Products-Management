@@ -34,16 +34,17 @@ module.exports = {
                 totalQuantity += i.quantity
             }
 
-            // let orderData = cart.toObject()
-            // delete orderData["_id"]
+            let orderData = cart.toObject()
+            delete orderData["_id"]
+            orderData.totalQuantity=totalQuantity
 
-            let orderData = {
-                userId:cart.userId,
-                items:items,
-                totalItems:cart.totalItems,
-                totalQuantity:totalQuantity,
-                totalPrice:cart.totalPrice
-            }
+            // let orderData = {
+            //     userId:cart.userId,
+            //     items:items,
+            //     totalItems:cart.totalItems,
+            //     totalQuantity:totalQuantity,
+            //     totalPrice:cart.totalPrice
+            // }
             
             if (cancellable) {
                 if (cancellable != true || false) return res.status(400).send({ status: false, message: "Cancellable can only be boolean" })
