@@ -94,8 +94,9 @@ router.post(
 // update cart
 router.put(
   "/users/:userId/cart",
-  mid.authentication,
-  mid.authorisation,
+  // mid.authentication,
+  // mid.authorisation,
+  validCart.updateCart,
   cartController.updateCart)
 
 
@@ -103,8 +104,9 @@ router.put(
 
 router.get(
   '/users/:userId/cart',
- // mid.authentication,
- // mid.authorisation,
+ mid.authentication,
+ mid.authorisation,
+
   cartController.getCart
 )
 
@@ -119,7 +121,11 @@ router.delete("/users/:userId/cart",
 // -------------order-----------
 
 // create order
-router.post("/users/:userId/orders",orderController.createorder)
+router.post("/users/:userId/orders",
+mid.authentication,
+ mid.authorisation,
+orderController.createorder,
+)
 
 //=========================== if endpoint is not correct==========================================
 

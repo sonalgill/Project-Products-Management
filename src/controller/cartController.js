@@ -85,19 +85,7 @@ module.exports = {
         try {
             let data = req.body
             let userId = req.params.userId
-
             let { cartId, productId, removeProduct } = data
-
-            if (!userId) return res.status(400).send({ status: false, msg: "Please enter userId" })
-            if (!v.isValidObjectId(userId)) return res.status(400).send({ status: false, msg: "Please enter a valid userId" })
-
-            if (!cartId) return res.status(400).send({ status: false, msg: "Please enter cartId" })
-            if (!v.isValidObjectId(cartId)) return res.status(400).send({ status: false, msg: "Please enter a valid cartId" })
-
-            if (!productId) return res.status(400).send({ status: false, msg: "Please enter productId" })
-            if (!v.isValidObjectId(productId)) return res.status(400).send({ status: false, msg: "Please enter a valid productId" })
-
-            if (!(removeProduct == 0 || removeProduct == 1)) return res.status(400).send({ status: false, msg: "Remove product can only be 0 and 1" })
 
             let cart = await cartModel.findOne({ userId })
             if (!cart) return res.status(400).send({ status: false, msg: "Cart is not present in database" })
