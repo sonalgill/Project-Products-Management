@@ -7,7 +7,8 @@ const cartController = require('../controller/cartController')
 const validUser = require('../validation/userValidation')
 const validProduct = require('../validation/productValidation')
 const validCart = require('../validation/cartValidation')
-const mid = require('../middleware/auth')
+const mid = require('../middleware/auth');
+const orderController = require("../controller/orderController");
 
 //-------------user---------
 
@@ -114,6 +115,11 @@ router.delete("/users/:userId/cart",
  // mid.authorisation,
   cartController.deleteCart
 )
+
+// -------------order-----------
+
+// create order
+router.post("/users/:userId/orders",orderController.createorder)
 
 //=========================== if endpoint is not correct==========================================
 
