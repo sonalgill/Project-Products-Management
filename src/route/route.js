@@ -4,10 +4,11 @@ const router = express.Router();
 const userController = require('../controller/userController')
 const productController = require('../controller/productController')
 const cartController = require('../controller/cartController')
+const orderController = require("../controller/orderController")
 const validUser = require('../validation/userValidation')
 const validProduct = require('../validation/productValidation')
 const validCart = require('../validation/cartValidation')
-const mid = require('../middleware/auth')
+const mid = require('../middleware/auth');
 
 //-------------user---------
 
@@ -93,8 +94,9 @@ router.post(
 // update cart
 router.put(
   "/users/:userId/cart",
-  mid.authentication,
-  mid.authorisation,
+ // mid.authentication,
+ // mid.authorisation,
+  validCart.updateCart,
   cartController.updateCart)
 
 
@@ -102,17 +104,28 @@ router.put(
 
 router.get(
   '/users/:userId/cart',
- // mid.authentication,
- // mid.authorisation,
+ //mid.authentication,
+ //mid.authorisation,
   cartController.getCart
 )
 
 // Delete cart
 
 router.delete("/users/:userId/cart",
- // mid.authentication,
- // mid.authorisation,
+ mid.authentication,
+ mid.authorisation,
   cartController.deleteCart
+)
+
+
+//---------order-----------------
+
+//updateOrder
+router.put(
+  '/users/:userId/orders',
+  mid.authentication,
+  mid.authorisation,
+  orderController.updateOrder
 )
 
 //=========================== if endpoint is not correct==========================================

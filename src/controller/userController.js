@@ -69,7 +69,7 @@ module.exports = {
         }
     },
     
-    getUser: async function (req, res, next) {
+    getUser: async function (req, res) {
         try {
             let userId = req.params.userId
             if (!v.isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Please enter a valid userId" })

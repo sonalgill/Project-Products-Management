@@ -1,3 +1,4 @@
+const { default: mongoose } = require('mongoose')
 const cartModel = require('../model/cartModel')
 const productModel = require('../model/productModel')
 const userModel = require('../model/userModel')
@@ -39,7 +40,7 @@ module.exports = {
                             },
                             { $inc: { totalPrice: totalPrice, "items.$.quantity": quantity } },
                             { new: true }
-                        ).populate({path: 'items.productId', model: 'product', select: {title : 1, productImage: 1, price: 1}})
+                        ).populate({ path: 'items.productId', model: 'product', select: { title: 1, productImage: 1, price: 1 } })
                         return res.status(201).send({ status: true, message: "Success", data: cart })
                     }
                 }
@@ -47,19 +48,19 @@ module.exports = {
                     { _id: cartId },
                     { $push: { items: { productId: productId, quantity: quantity } }, $inc: { totalPrice: totalPrice, totalItems: 1 } },
                     { new: true }
-                ).populate({path: 'items.productId', model: 'product', select: {title : 1, productImage: 1, price: 1}})
+                ).populate({ path: 'items.productId', model: 'product', select: { title: 1, productImage: 1, price: 1 } })
                 return res.status(201).send({ status: true, message: "Success", data: cart })
             }
             let cart = await cartModel.create(
                 { userId: userId, items: { productId: productId, quantity: quantity }, totalPrice: totalPrice, totalItems: 1 })
-            cart = await cart.populate({path: 'items.productId', model: 'product', select: {title : 1, productImage: 1, price: 1}})
-            return res.status(201).send({ status: true, message: "Success", data:cart })
+            cart = await cart.populate({ path: 'items.productId', model: 'product', select: { title: 1, productImage: 1, price: 1 } })
+            return res.status(201).send({ status: true, message: "Success", data: cart })
         } catch (e) {
             return res.status(500).send({ status: false, msg: e.message })
         }
     },
 
-    getCart: async function (req, res, next) {
+    getCart: async function (req, res) {
         try {
             let userId = req.params.userId
             if (!userId) {
@@ -85,68 +86,48 @@ module.exports = {
         try {
             let data = req.body
             let userId = req.params.userId
-
             let { cartId, productId, removeProduct } = data
 
-            if (!userId) return res.status(400).send({ status: false, msg: "Please enter userId" })
-            if (!v.isValidObjectId(userId)) return res.status(400).send({ status: false, msg: "Please enter a valid userId" })
-
-            if (!cartId) return res.status(400).send({ status: false, msg: "Please enter cartId" })
-            if (!v.isValidObjectId(cartId)) return res.status(400).send({ status: false, msg: "Please enter a valid cartId" })
-
-            if (!productId) return res.status(400).send({ status: false, msg: "Please enter productId" })
-            if (!v.isValidObjectId(productId)) return res.status(400).send({ status: false, msg: "Please enter a valid productId" })
-
-            if (!(removeProduct == 0 || removeProduct == 1)) return res.status(400).send({ status: false, msg: "Remove product can only be 0 and 1" })
-
             let cart = await cartModel.findOne({ userId })
-            if (!cart) return res.status(400).send({ status: false, msg: "Cart is not present in database" })
-            if (cart.items.length == 0) return res.status(400).send({ status: false, msg: "Cart is empty" })
+            if (!cart) return res.status(400).send({ status: false, msg: "No such Cart not found!" })
+            if (cart.items.length == 0) return res.status(400).send({ status: false, msg: "Cart is empty!" })
 
             let product = await productModel.findOne({ _id: productId })
-            if (!product) return res.status(404).send({ status: false, msg: "Product not found" })
+            if (!product) return res.status(404).send({ status: false, msg: "Product not found!" })
 
             let cartItems = cart.items
-            let ProductQuantity = undefined
-            let totalPrice = undefined
-            let totalItems = undefined
 
             if (removeProduct == 1) {
                 for (let i in cartItems) {
-                    if (cartItems[i].productId == productId) {
-                        ProductQuantity = cartItems[i].quantity - 1
-                        cartItems[i].quantity = ProductQuantity
-                        totalPrice = cart.totalPrice - product.price
-
-                        if (cartItems[i].quantity == 0) {
-                            cartItems.splice(i, 1)
-                            totalItems = cart.totalItems - 1
-                        }
-                        break;
+                    if (cartItems[i].productId == productId && cartItems[i].quantity != 1) {
+                        let rmProduct = await cartModel.findOneAndUpdate(
+                            { _id: cartId, 'items.productId': productId },
+                            { $inc: { totalPrice: -product.price, 'items.$.quantity': -1 } },
+                            { new: true })
+                        return res.status(200).send({ status: true, message: "Success", data: rmProduct })
+                    }
+                    if (cartItems[i].productId == productId && cartItems[i].quantity == 1){
+                        let rmProduct = await cartModel.findOneAndUpdate(
+                            { _id: cartId, 'items.productId': productId },
+                            { $inc: { totalPrice: -product.price, totalItems: -1 }, $pull: { items: { productId: productId } } },
+                            { new: true })
+                        return res.status(200).send({ status: true, message: "Success", data: rmProduct })
                     }
                 }
-
-
             }
-
             if (removeProduct == 0) {
                 for (let i in cartItems) {
                     if (cartItems[i].productId == productId) {
-                        totalPrice = cart.totalPrice - (product.price * cartItems[i].quantity)
-                        totalItems = cart.totalItems - 1
-                        cartItems.splice(i, 1)
-                        break;
+                        let rmProduct = await cartModel.findOneAndUpdate(
+                            { _id: cartId, 'items.productId': productId },
+                            { $inc: { totalPrice: -product.price, totalItems: -1 }, $pull: { items: { productId: productId } } },
+                            { new: true })
+                        return res.status(200).send({ status: true, message: "Success", data: rmProduct })
                     }
 
                 }
             }
-            if (cartItems.length == 0) {
-                totalPrice = 0
-                totalItems = 0
-            }
-            let updateCart = await cartModel.findOneAndUpdate({ _id: cartId }, { items: cartItems, totalPrice: totalPrice, totalItems: totalItems }, { new: true })
-            return res.status(200).send({ status: true, message: "Success", data: updateCart })
-
+            return res.status(404).send({status: false, msg: "No such Product is present in the Cart!"})
         } catch (err) {
             return res.status(500).send({ status: false, msg: err.message })
         }
