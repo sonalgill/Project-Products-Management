@@ -102,16 +102,16 @@ router.put(
 
 router.get(
   '/users/:userId/cart',
-  mid.authentication,
-  mid.authorisation,
+ // mid.authentication,
+ // mid.authorisation,
   cartController.getCart
 )
 
 // Delete cart
 
 router.delete("/users/:userId/cart",
-  mid.authentication,
-  mid.authorisation,
+ // mid.authentication,
+ // mid.authorisation,
   cartController.deleteCart
 )
 
