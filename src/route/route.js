@@ -31,6 +31,7 @@ router.post(
 router.get(
   '/user/:userId/profile',
   mid.authentication,
+  mid.authorisation,
   userController.getUser
 )
 
@@ -87,7 +88,7 @@ router.delete(
 router.post(
   '/users/:userId/cart',
  mid.authentication,
-//  mid.authorisation,
+  mid.authorisation,
   validCart.createCart,
   cartController.createCart
 )
