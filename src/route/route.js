@@ -8,6 +8,7 @@ const orderController = require("../controller/orderController")
 const validUser = require('../validation/userValidation')
 const validProduct = require('../validation/productValidation')
 const validCart = require('../validation/cartValidation')
+const validOrder = require("../validation/orderValidation")
 const mid = require('../middleware/auth')
 
 //-------------user---------
@@ -85,8 +86,8 @@ router.delete(
 //create cart
 router.post(
   '/users/:userId/cart',
- // mid.authentication,
- // mid.authorisation,
+ mid.authentication,
+//  mid.authorisation,
   validCart.createCart,
   cartController.createCart
 )
@@ -94,8 +95,8 @@ router.post(
 // update cart
 router.put(
   "/users/:userId/cart",
- // mid.authentication,
- // mid.authorisation,
+ mid.authentication,
+ mid.authorisation,
   validCart.updateCart,
   cartController.updateCart)
 
@@ -104,8 +105,8 @@ router.put(
 
 router.get(
   '/users/:userId/cart',
- //mid.authentication,
- //mid.authorisation,
+ mid.authentication,
+ mid.authorisation,
   cartController.getCart
 )
 
@@ -121,16 +122,18 @@ router.delete("/users/:userId/cart",
 //---------order-----------------
 // create order
 router.post("/users/:userId/orders",
-//mid.authentication,
-// mid.authorisation,
+mid.authentication,
+mid.authorisation,
+validOrder.createOrder,
 orderController.createorder,
 )
 
 //updateOrder
 router.put(
   '/users/:userId/orders',
- // mid.authentication,
- // mid.authorisation,
+ mid.authentication,
+ mid.authorisation,
+ validOrder.updateOrder,
   orderController.updateOrder
 )
 

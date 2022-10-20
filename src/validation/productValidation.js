@@ -5,6 +5,8 @@ module.exports = {
     createProduct: (req, res, next) => {
         try {
             let data = JSON.parse(JSON.stringify(req.body))
+            if(!v.validBody(req.body))
+             return res.status(400).send({ status: false, msg: "Please provide some data in the body"})
             let { title, description, price, currencyId, currencyFormat, isFreeShipping, style, installments, availableSizes } = req.body
             if (!title || !title.trim().length)
                 return res.status(400).send({ status: false, msg: "Title is Mandatory. Also, it can't be an Empty String!" })

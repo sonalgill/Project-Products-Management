@@ -4,7 +4,6 @@ const bcrypt = require("bcrypt")
 const awsFunction = require('./aws')
 const uploadFile = awsFunction.uploadFile
 const v = require('../validation/validations')
-const { objectValue, pincodeRegex } = require("../validation/validations")
 
 module.exports = {
     createUser: async (req, res) => {

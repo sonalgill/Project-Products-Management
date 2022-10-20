@@ -8,11 +8,12 @@ module.exports = {
             let { productId, quantity, cartId } = req.body
             if (!v.isValidObjectId(userId))
                 return res.status(400).send({ status: false, msg: "Please provide a Valid UserID!" })
+            if (!v.validBody(req.body))
+                return res.status(400).send({ status: false, msg: "Provide some Data in the Cart!" })
             let cartUser = await cartModel.findOne({ userId: userId })
             if (cartUser && !cartId)
                 return res.status(400).send({ status: false, msg: "Cart is already created.Please provide CartId!" })
-            if (!v.validBody(req.body))
-                return res.status(400).send({ status: false, msg: "Provide some Data in the Cart!" })
+
             if (!productId)
                 return res.status(400).send({ status: false, msg: "ProductId is required!" })
             if (!v.isValidObjectId(productId))

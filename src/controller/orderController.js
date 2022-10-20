@@ -14,8 +14,12 @@ module.exports = {
             let cart = await cartModel.findOne({ _id: cartId, userId: userId, isDeleted: false })
             if (!cart)
                 return res.status(404).send({ status: false, message: "cart doesn't exist!" })
+
             if (cart.userId != userId)
                 return res.status(404).send({ status: false, message: "This cart doesn't belong to this user!" })
+
+            if (cart.items.length == 0)
+                return res.status(404).send({ status: false, message: "Cart is empty nothing to purchase" })
 
             let items = cart.items
             let totalQuantity = 0
@@ -35,6 +39,8 @@ module.exports = {
                 orderData["status"] = status
             }
             let orderCreation = await orderModel.create(orderData)
+            orderCreation = orderCreation.toObject()
+            delete orderCreation["isDeleted"]
             await cartModel.findOneAndUpdate({ _id: cartId, userId: userId, isDeleted: false }, { $set: { items: [], totalPrice: 0, totalQuantity: 0 } })
             return res.status(201).send({ status: true, message: "Success", data: orderCreation })
         } catch (err) {

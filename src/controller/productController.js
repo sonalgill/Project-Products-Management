@@ -9,7 +9,7 @@ module.exports = {
     createProduct: async (req, res) => {
         try {
             let data = req.body
-            let { currencyId, currencyFormat, title, description, style, availableSizes, isFreeShipping } = data
+            let { currencyId, currencyFormat, title, description, style, availableSizes, isFreeShipping ,deletedAt} = data
             req.body.title = title.replace(/  +/g, ' ').trim()
             title = req.body.title
             let uniqueTitle = await productModel.findOne({ title: { $regex: title, $options: 'i' } })
@@ -41,6 +41,9 @@ module.exports = {
                 if (!sizes.includes(availableSizes[i])) {
                     return res.status(400).send({ status: false, msg: `availableSizes can be among [S, XS, M, X, L, XXL, XL] only` })
                 }
+            }
+            if(!deletedAt){
+                req.body.deletedAt=null
             }
             req.body.description = description.replace(/  +/g, ' ')
             if (style) { req.body.style = style.replace(/  +/g, ' ') }
@@ -88,7 +91,7 @@ module.exports = {
             let productId = req.params.productId
             if (!v.isValidObjectId(productId))
                 return res.status(400).send({ status: false, message: "Please enter a valid productId!" })
-            let findProduct = await productModel.findOne({ _id: productId })
+            let findProduct = await productModel.findOne({ _id: productId,isDeleted:false })
             if (!findProduct)
                 return res.status(404).send({ status: false, message: "Product not found!" })
             return res.status(200).send({ status: true, message: "Success", data: findProduct })
@@ -151,9 +154,9 @@ module.exports = {
                 return res.status(400).send({ status: false, message: "Invaild productId!" })
             let isExist = await productModel.findById(productId)
             if (!isExist)
-                return res.status(404).send({ status: false, message: "Product Id dosen't exist!" });
+                return res.status(404).send({ status: false, message: "Product not found" });
             if (isExist.isDeleted == true)
-                return res.status(400).send({ status: false, message: "Product is already deleted!" });
+                return res.status(404).send({ status: false, message: "Product not found" });
             let deleteProduct = await productModel.findOneAndUpdate({ _id: productId },
                 { $set: { isDeleted: true, deletedAt: moment().format() } },
                 { new: true, upsert: true })
